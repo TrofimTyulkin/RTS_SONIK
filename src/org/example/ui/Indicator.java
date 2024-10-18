@@ -7,7 +7,6 @@ import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
 
 public class Indicator extends JPanel implements ActionListener {
-
     Color color;
     Timer timer;
 

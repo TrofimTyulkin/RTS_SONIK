@@ -15,7 +15,6 @@ import java.awt.*;
 
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Hello world!");
         MainFrame main = new MainFrame();
         main.setPreferredSize(new Dimension(800, 500));
         JPanel mainPanel = new MainPanel(main);

@@ -78,11 +78,7 @@ public class DataPanel extends JPanel {
 //        ChartPanel panel = new ChartPanel(chart);
 //        panel.setPreferredSize(new Dimension(800, 500));
 //        add(panel);
-        List<Integer> a = new ArrayList<>();
-        a.add(2);
-        a.add(6);
-        a.add(3);
-        a.add(8);
+
 
 
         //add(new DrawGraph(a));
