@@ -60,12 +60,12 @@ public class Main {
         plot.setRenderer(1, plot.getRenderer(0));  // Используем тот же рендерер для обеих осей
         plot.setDatasetRenderingOrder(DatasetRenderingOrder.REVERSE);
         //setSize(1350,600);
-        //ChartPanel panel = new ChartPanel(chart);
-        //panel.setPreferredSize(new Dimension(1150, 600));
-        //add(panel);
+        ChartPanel panel = new ChartPanel(chart);
+        panel.setPreferredSize(new Dimension(1150, 600));
+
 
         main.getPanel().add(mainPanel, "main");
-        //main.getPanel().add(panel, "test");
+        main.getPanel().add(panel, "test");
 
         main.getLayout().show(main.getPanel(), "main");
         main.revalidate();
