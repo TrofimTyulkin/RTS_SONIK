@@ -36,10 +36,10 @@ public class MainPanel extends JPanel {
 //        System.out.println((getSize().height/2) - animation.getBladeLength());
 //        System.out.println((getSize().height/2) + animation.getBladeLength());
 //        add(animation);
-        layout.putConstraint(SpringLayout.WEST, animation, paddingBlade, SpringLayout.WEST, frame.getContentPane());
-        layout.putConstraint(SpringLayout.EAST, animation, paddingBlade+animation.getBladeLength()*2, SpringLayout.WEST, frame.getContentPane());
-        layout.putConstraint(SpringLayout.NORTH, animation, padding, SpringLayout.WEST, frame.getContentPane());
-        layout.putConstraint(SpringLayout.SOUTH, animation, animation.getBladeLength()*2 + padding, SpringLayout.WEST, frame.getContentPane());
+        layout.putConstraint(SpringLayout.WEST, animation, paddingBlade, SpringLayout.WEST, this);
+        layout.putConstraint(SpringLayout.EAST, animation, paddingBlade+animation.getBladeLength()*2, SpringLayout.WEST, this);
+        layout.putConstraint(SpringLayout.NORTH, animation, padding, SpringLayout.WEST, this);
+        layout.putConstraint(SpringLayout.SOUTH, animation, animation.getBladeLength()*2 + padding, SpringLayout.WEST, this);
 //        add(animation2);
 //        layout.putConstraint(SpringLayout.WEST, animation2, paddingBlade+animation.getBladeLength()*2 + 300, SpringLayout.WEST, getContentPane());
 //        layout.putConstraint(SpringLayout.EAST, animation2, paddingBlade+animation.getBladeLength()*2 + 300 + animation.bladeLength + animation.getBladeLength()*2, SpringLayout.WEST, getContentPane());
@@ -68,38 +68,40 @@ public class MainPanel extends JPanel {
 
 
         layout.putConstraint(
-                SpringLayout.WEST, metricsContainer, paddingBlade, SpringLayout.WEST, frame.getContentPane());
+                SpringLayout.WEST, metricsContainer, paddingBlade, SpringLayout.WEST, this);
         layout.putConstraint(
-                SpringLayout.EAST, metricsContainer, paddingBlade+animation.getBladeLength()*4, SpringLayout.WEST, frame.getContentPane());
+                SpringLayout.EAST, metricsContainer, paddingBlade+animation.getBladeLength()*4, SpringLayout.WEST, this);
         layout.putConstraint(
-                SpringLayout.NORTH, metricsContainer, animation.getBladeLength()*2 + padding, SpringLayout.WEST, frame.getContentPane());
+                SpringLayout.NORTH, metricsContainer, animation.getBladeLength()*2 + padding, SpringLayout.WEST, this);
 
         layout.putConstraint(
-                SpringLayout.WEST, textContainer, 650, SpringLayout.WEST, frame.getContentPane());
+                SpringLayout.WEST, textContainer, 650, SpringLayout.WEST, this);
         layout.putConstraint(
-                SpringLayout.EAST, textContainer, 940, SpringLayout.WEST, frame.getContentPane());
+                SpringLayout.EAST, textContainer, 940, SpringLayout.WEST, this);
         layout.putConstraint(
-                SpringLayout.NORTH, textContainer, 300, SpringLayout.WEST, frame.getContentPane());
+                SpringLayout.NORTH, textContainer, 300, SpringLayout.NORTH, this);
         layout.putConstraint(
-                SpringLayout.SOUTH, textContainer, 510, SpringLayout.WEST, frame.getContentPane());
+                SpringLayout.SOUTH, textContainer, 510, SpringLayout.NORTH, this);
 
         layout.putConstraint(
-                SpringLayout.WEST, indicatorErrorBattery, 250, SpringLayout.WEST, frame.getContentPane());
+                SpringLayout.WEST, indicatorErrorBattery, 250, SpringLayout.WEST, this);
         layout.putConstraint(
-                SpringLayout.EAST, indicatorErrorBattery, 240, SpringLayout.WEST, frame.getContentPane());
+                SpringLayout.EAST, indicatorErrorBattery, 240, SpringLayout.WEST, this);
         layout.putConstraint(
-                SpringLayout.NORTH, indicatorErrorBattery, 300, SpringLayout.WEST, frame.getContentPane());
+                SpringLayout.NORTH, indicatorErrorBattery, 300, SpringLayout.NORTH, this);
         layout.putConstraint(
-                SpringLayout.SOUTH, indicatorErrorBattery, 320, SpringLayout.WEST, frame.getContentPane());
+                SpringLayout.SOUTH, indicatorErrorBattery, 320, SpringLayout.NORTH, this);
 
         layout.putConstraint(
-                SpringLayout.WEST, indicatorErrorPanel, 250, SpringLayout.WEST, frame.getContentPane());
+                SpringLayout.WEST, indicatorErrorPanel, 250, SpringLayout.WEST, this);
         layout.putConstraint(
-                SpringLayout.EAST, indicatorErrorPanel, 240, SpringLayout.WEST, frame.getContentPane());
+                SpringLayout.EAST, indicatorErrorPanel, 260, SpringLayout.WEST, this);
         layout.putConstraint(
-                SpringLayout.NORTH, indicatorErrorPanel, 330, SpringLayout.WEST, frame.getContentPane());
+                SpringLayout.NORTH, indicatorErrorPanel, 330, SpringLayout.NORTH, this);
         layout.putConstraint(
-                SpringLayout.SOUTH, indicatorErrorPanel, 350, SpringLayout.WEST, frame.getContentPane());
+                SpringLayout.SOUTH, indicatorErrorPanel, 350, SpringLayout.NORTH, this);
+
+        System.err.println(this.getSize());
 
 
         add(indicatorErrorBattery);
@@ -132,14 +134,19 @@ public class MainPanel extends JPanel {
 
 
 
-        //add(pane);
+//        layout.putConstraint(
+//                SpringLayout.EAST, btnContainer, -410, SpringLayout.EAST, this);
+
+        setPadding(layout, 0, -1, 10, 0, btnContainer, this);
+
 
         btnContainer.add(button);
         btnContainer.add(button1);
 
         add(btnContainer);
 
-        layout.putConstraint(SpringLayout.NORTH, container, padding, SpringLayout.WEST, frame.getContentPane());
+
+        layout.putConstraint(SpringLayout.NORTH, container, padding, SpringLayout.WEST, this);
 
         Timer timer2 = new Timer(1000, e -> label.setText(String.valueOf(LocalDateTime.now().toLocalDate()) +' ' + String.valueOf(LocalDateTime.now().toLocalTime()).split("\\.")[0]));
         timer2.start();
@@ -189,12 +196,12 @@ public class MainPanel extends JPanel {
         }*/
 
 
-        layout.putConstraint(
+/*        layout.putConstraint(
                 SpringLayout.EAST, btnContainer, 800, SpringLayout.EAST, frame.getContentPane());
 //        layout.putConstraint(
 //                SpringLayout.EAST, btnContainer, paddingBlade+animation.getBladeLength()*4, SpringLayout.WEST, frame.getContentPane());
         layout.putConstraint(
-                SpringLayout.NORTH, btnContainer, padding, SpringLayout.NORTH, frame.getContentPane());
+                SpringLayout.NORTH, btnContainer, padding, SpringLayout.NORTH, frame.getContentPane());*/
         //layout.putConstraint(SpringLayout.SOUTH, metricsContainer, animation.getBladeLength()*2 + padding, SpringLayout.WEST, getContentPane());
 
     }
@@ -230,5 +237,12 @@ public class MainPanel extends JPanel {
         g2d.drawPolygon(xPointsSolarPanel, yPointsSolarPanel, yPointsSolarPanel.length);
 
         //g2d.fillPolygon();
+    }
+
+    public void setPadding (SpringLayout layout, int westPadding, int eastPadding, int northPadding, int southPadding, Component c1, Component c2){
+        if(westPadding!=0)layout.putConstraint(SpringLayout.WEST, c1, westPadding, SpringLayout.WEST, c2);
+        if(eastPadding!=0) layout.putConstraint(SpringLayout.EAST, c1, -eastPadding, SpringLayout.EAST, c2);
+        if(northPadding!=0) layout.putConstraint(SpringLayout.NORTH, c1, northPadding, SpringLayout.NORTH, c2);
+        if(southPadding!=0) layout.putConstraint(SpringLayout.SOUTH, c1, -southPadding, SpringLayout.SOUTH, c2);
     }
 }

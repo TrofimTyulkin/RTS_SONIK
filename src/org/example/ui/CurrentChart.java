@@ -9,11 +9,14 @@ import org.jfree.chart.plot.DatasetRenderingOrder;
 import org.jfree.chart.ui.ApplicationFrame;
 import org.jfree.data.category.DefaultCategoryDataset;
 
+import java.util.List;
 
-public class VoltageCurrentChart extends ApplicationFrame {
 
-    public VoltageCurrentChart(String title) {
-        super(title);
+public class CurrentChart extends ChartFactory {
+
+    public CurrentChart(List<DefaultCategoryDataset> datasets, String title) {
+        //super();
+
 
         // Создаем первый набор данных для напряжения
         DefaultCategoryDataset voltageDataset = new DefaultCategoryDataset();
@@ -32,6 +35,8 @@ public class VoltageCurrentChart extends ApplicationFrame {
                 "Напряжение (Вольты)",       // Ось Y1 (напряжение)
                 voltageDataset
         );
+
+
 
         CategoryPlot plot = chart.getCategoryPlot();
 
@@ -59,6 +64,6 @@ public class VoltageCurrentChart extends ApplicationFrame {
 
         // Добавляем график в окно
         ChartPanel chartPanel = new ChartPanel(chart);
-        setContentPane(chartPanel);
+        //setContentPane(chartPanel);
     }
 }

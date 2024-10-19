@@ -16,7 +16,7 @@ import java.awt.*;
 public class Main {
     public static void main(String[] args) {
         MainFrame main = new MainFrame();
-        main.setPreferredSize(new Dimension(800, 500));
+        main.setPreferredSize(new Dimension(1100, 500));
         JPanel mainPanel = new MainPanel(main);
 
         DefaultCategoryDataset voltageDataset = new DefaultCategoryDataset();
