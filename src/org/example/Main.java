@@ -1,23 +1,31 @@
 package org.example;
 
+import com.formdev.flatlaf.FlatDarculaLaf;
+import com.formdev.flatlaf.FlatIntelliJLaf;
+import com.formdev.flatlaf.FlatLightLaf;
 import org.example.ui.MainFrame;
 import org.example.ui.MainPanel;
+import org.example.ui.test;
 import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.DatasetRenderingOrder;
 import org.jfree.data.category.DefaultCategoryDataset;
 
+
 import javax.swing.*;
 import java.awt.*;
 
 public class Main {
     public static void main(String[] args) {
+        //UIManager.setLookAndFeel("Nimbus");
+        try {
+            UIManager.setLookAndFeel( new test());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         MainFrame main = new MainFrame();
-        main.setPreferredSize(new Dimension(1100, 500));
-        JPanel mainPanel = new MainPanel(main);
 
         DefaultCategoryDataset voltageDataset = new DefaultCategoryDataset();
         voltageDataset.addValue(5, "Датчик 1", "1 сек");
@@ -64,11 +72,11 @@ public class Main {
         //panel.setPreferredSize(new Dimension(1150, 600));
         //add(panel);
 
-        main.getPanel().add(mainPanel, "main");
+//        main.getPanel().add(mainPanel, "main");
         //main.getPanel().add(panel, "test");
 
-        main.getLayout().show(main.getPanel(), "main");
-        main.revalidate();
+//        main.getLayout().show(main.getPanel(), "main");
+//        main.revalidate();
 
     }
 }

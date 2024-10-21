@@ -157,6 +157,15 @@ public class Data implements ActionListener {
     public List<Double> getDataCapacityBattery() {
         return dataCapacityBattery;
     }
+    public List<Double> getDataCapacityBatteryForChart() {
+        List<Double> res = new ArrayList<>();
+        int maxSize = dataCapacityBattery.size();
+        if (maxSize >=8)  maxSize = 8;
+        for (int i = dataCapacityBattery.size() - 1; i >= dataCapacityBattery.size() - maxSize; i--) {
+            res.add(dataCapacityBattery.get(i));
+        }
+        return res;
+    }
 
     public void setProduce(int min, int max){
         minProduce = min;

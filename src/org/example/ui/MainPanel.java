@@ -16,35 +16,19 @@ public class MainPanel extends JPanel {
     JLabel dataCapacityBattery = new JLabel();
     JLabel dataVoltageBattery = new JLabel();
     JLabel dataPowerProducer = new JLabel();
-    public MainPanel(JFrame frame) throws HeadlessException {
+    public MainPanel() throws HeadlessException {
+
         SpringLayout layout = new SpringLayout();
         setLayout(layout);
-        Container container = new Container();//контейнер, в котором наши поля ввода и кнопка будут
+
+        Container container = new Container();//контейнер для вывода даты
         container.setLayout(new GridLayout(1, 1));//тип расположения элементов в контейнере
+
         JLabel label = new JLabel(String.valueOf(LocalDateTime.now().toLocalDate()) +' ' + String.valueOf(LocalDateTime.now().toLocalTime()).split("\\.")[0]);
         container.add(label);
-        setPreferredSize(new Dimension(1150, 600));
-
-
-        Animation animation = new Animation();
-        Animation animation2 = new Animation();
-
+        setPadding(layout, 5, 0, 1, 0, container, this);
         add(container);
-        //animation.setSize(100,100);
-        int padding = 20;
-        int paddingBlade = 350;
-//        System.out.println((getSize().height/2) - animation.getBladeLength());
-//        System.out.println((getSize().height/2) + animation.getBladeLength());
-//        add(animation);
-        layout.putConstraint(SpringLayout.WEST, animation, paddingBlade, SpringLayout.WEST, this);
-        layout.putConstraint(SpringLayout.EAST, animation, paddingBlade+animation.getBladeLength()*2, SpringLayout.WEST, this);
-        layout.putConstraint(SpringLayout.NORTH, animation, padding, SpringLayout.WEST, this);
-        layout.putConstraint(SpringLayout.SOUTH, animation, animation.getBladeLength()*2 + padding, SpringLayout.WEST, this);
-//        add(animation2);
-//        layout.putConstraint(SpringLayout.WEST, animation2, paddingBlade+animation.getBladeLength()*2 + 300, SpringLayout.WEST, getContentPane());
-//        layout.putConstraint(SpringLayout.EAST, animation2, paddingBlade+animation.getBladeLength()*2 + 300 + animation.bladeLength + animation.getBladeLength()*2, SpringLayout.WEST, getContentPane());
-//        layout.putConstraint(SpringLayout.NORTH, animation2, padding, SpringLayout.WEST, getContentPane());
-//        layout.putConstraint(SpringLayout.SOUTH, animation2, animation.getBladeLength()*2 + padding, SpringLayout.WEST, getContentPane());
+
 
         Container metricsContainer = new Container();
         metricsContainer.setLayout(new GridLayout(2,3));
@@ -52,60 +36,34 @@ public class MainPanel extends JPanel {
         Container btnContainer = new Container();
         btnContainer.setLayout(new GridLayout(2,1));
 
-        //textContainer.setLayout(new BorderLayout());
-
         JTextArea area = new JTextArea(10, 30);
         area.setEditable(false);
         JScrollPane textContainer = new JScrollPane(area);
 
         Indicator indicatorErrorBattery = new Indicator();
         Indicator indicatorErrorPanel = new Indicator();
-        //area.setText("test");
 
+        setPadding(layout, 100, 0, 100, 0, metricsContainer, this);
 
-        //metricsContainer.add(data);
-        //metricsContainer.add(data1);
+        setPadding(layout, 0, -1, 0, -1, textContainer, this);
+        //для штуки которая хранит в себе логи необходим кастомный размер, поэтому не использую метод setPadding()
+        layout.putConstraint(
+                SpringLayout.WEST, textContainer, -1 - 450, SpringLayout.EAST, this);
+        layout.putConstraint(
+                SpringLayout.NORTH, textContainer, -1 - 200, SpringLayout.SOUTH, this);
 
+        JLabel labelErrorPanel = new JLabel("Ошибка в контроллере панели");
+        JLabel labelErrorBattery = new JLabel("Ошибка в контроллере батареи");
 
-        layout.putConstraint(
-                SpringLayout.WEST, metricsContainer, paddingBlade, SpringLayout.WEST, this);
-        layout.putConstraint(
-                SpringLayout.EAST, metricsContainer, paddingBlade+animation.getBladeLength()*4, SpringLayout.WEST, this);
-        layout.putConstraint(
-                SpringLayout.NORTH, metricsContainer, animation.getBladeLength()*2 + padding, SpringLayout.WEST, this);
-
-        layout.putConstraint(
-                SpringLayout.WEST, textContainer, 650, SpringLayout.WEST, this);
-        layout.putConstraint(
-                SpringLayout.EAST, textContainer, 940, SpringLayout.WEST, this);
-        layout.putConstraint(
-                SpringLayout.NORTH, textContainer, 300, SpringLayout.NORTH, this);
-        layout.putConstraint(
-                SpringLayout.SOUTH, textContainer, 510, SpringLayout.NORTH, this);
-
-        layout.putConstraint(
-                SpringLayout.WEST, indicatorErrorBattery, 250, SpringLayout.WEST, this);
-        layout.putConstraint(
-                SpringLayout.EAST, indicatorErrorBattery, 240, SpringLayout.WEST, this);
-        layout.putConstraint(
-                SpringLayout.NORTH, indicatorErrorBattery, 300, SpringLayout.NORTH, this);
-        layout.putConstraint(
-                SpringLayout.SOUTH, indicatorErrorBattery, 320, SpringLayout.NORTH, this);
-
-        layout.putConstraint(
-                SpringLayout.WEST, indicatorErrorPanel, 250, SpringLayout.WEST, this);
-        layout.putConstraint(
-                SpringLayout.EAST, indicatorErrorPanel, 260, SpringLayout.WEST, this);
-        layout.putConstraint(
-                SpringLayout.NORTH, indicatorErrorPanel, 330, SpringLayout.NORTH, this);
-        layout.putConstraint(
-                SpringLayout.SOUTH, indicatorErrorPanel, 350, SpringLayout.NORTH, this);
-
-        System.err.println(this.getSize());
-
+        setPadding(layout, 0, 500, 200, 0, indicatorErrorBattery, this);
+        setPadding(layout, 0, -1, 20, 0, indicatorErrorPanel, indicatorErrorBattery);
+        setPadding(layout, 0, 15, -4, 0, labelErrorPanel, indicatorErrorPanel);
+        setPadding(layout, 0, 15, -4, 0, labelErrorBattery, indicatorErrorBattery);
 
         add(indicatorErrorBattery);
         add(indicatorErrorPanel);
+        add(labelErrorPanel);
+        add(labelErrorBattery);
 
         metricsContainer.add(dataAmperagePanel);
         metricsContainer.add(dataAmperageController);
@@ -113,11 +71,11 @@ public class MainPanel extends JPanel {
         metricsContainer.add(dataVoltagePanel);
         metricsContainer.add(dataVoltageController);
         metricsContainer.add(dataPowerProducer);
-
-
         add(metricsContainer);
+
         add(textContainer);
-        Data data = new Data();
+
+        Data data = new Data();//Дата хранит в себе данные по панели
 
         JButton button = new JButton("Перезапустить контроллер батареи");
         button.addActionListener(e-> data.setErrorRecharge(false));
@@ -125,28 +83,19 @@ public class MainPanel extends JPanel {
         JButton button1 = new JButton("Перезапустить контроллер панели");
         button1.addActionListener(e-> data.setErrorVoltage(false));
 
+        btnContainer.add(button);
+        btnContainer.add(button1);
+
+        setPadding(layout, 0, -1, 10, 0, btnContainer, this);
+        add(btnContainer);
+
         JSlider slider3 = new JSlider(0, 100, 20);
         add(slider3);
+        setPadding(layout, 1, 0, 30, 0, slider3, this);
         slider3.addChangeListener(e->{
             //System.out.println(slider3.getValue());
             data.setProduce(slider3.getValue());
         });
-
-
-
-//        layout.putConstraint(
-//                SpringLayout.EAST, btnContainer, -410, SpringLayout.EAST, this);
-
-        setPadding(layout, 0, -1, 10, 0, btnContainer, this);
-
-
-        btnContainer.add(button);
-        btnContainer.add(button1);
-
-        add(btnContainer);
-
-
-        layout.putConstraint(SpringLayout.NORTH, container, padding, SpringLayout.WEST, this);
 
         Timer timer2 = new Timer(1000, e -> label.setText(String.valueOf(LocalDateTime.now().toLocalDate()) +' ' + String.valueOf(LocalDateTime.now().toLocalTime()).split("\\.")[0]));
         timer2.start();
@@ -179,31 +128,17 @@ public class MainPanel extends JPanel {
                 area.setCaretColor(Color.red);
                 area.append(formattedTime + "   Ошибка контроллера: неверное выходное напряжение." + "\n");
                 indicatorErrorPanel.setColor(Color.red);
-            }else indicatorErrorPanel.setColor(Color.green);
+            } else indicatorErrorPanel.setColor(Color.green);
             if(data.isErrorRecharge()){
                 area.setCaretColor(Color.red);
                 area.append(formattedTime + "   Ошибка батареи. Перезарядка." + "\n");
                 indicatorErrorBattery.setColor(Color.red);
-            }else indicatorErrorBattery.setColor(Color.green);
+            } else indicatorErrorBattery.setColor(Color.green);
             repaint();
 
         });
         timer2.start();
         timer3.start();
-
-/*        for(char i='a'; i<='z'; i++){
-            System.out.println(i+" :"+ (int) i +".");
-        }*/
-
-
-/*        layout.putConstraint(
-                SpringLayout.EAST, btnContainer, 800, SpringLayout.EAST, frame.getContentPane());
-//        layout.putConstraint(
-//                SpringLayout.EAST, btnContainer, paddingBlade+animation.getBladeLength()*4, SpringLayout.WEST, frame.getContentPane());
-        layout.putConstraint(
-                SpringLayout.NORTH, btnContainer, padding, SpringLayout.NORTH, frame.getContentPane());*/
-        //layout.putConstraint(SpringLayout.SOUTH, metricsContainer, animation.getBladeLength()*2 + padding, SpringLayout.WEST, getContentPane());
-
     }
 
     @Override
@@ -240,9 +175,13 @@ public class MainPanel extends JPanel {
     }
 
     public void setPadding (SpringLayout layout, int westPadding, int eastPadding, int northPadding, int southPadding, Component c1, Component c2){
-        if(westPadding!=0)layout.putConstraint(SpringLayout.WEST, c1, westPadding, SpringLayout.WEST, c2);
+        if(westPadding!=0) layout.putConstraint(SpringLayout.WEST, c1, westPadding, SpringLayout.WEST, c2);
         if(eastPadding!=0) layout.putConstraint(SpringLayout.EAST, c1, -eastPadding, SpringLayout.EAST, c2);
         if(northPadding!=0) layout.putConstraint(SpringLayout.NORTH, c1, northPadding, SpringLayout.NORTH, c2);
         if(southPadding!=0) layout.putConstraint(SpringLayout.SOUTH, c1, -southPadding, SpringLayout.SOUTH, c2);
+        if(westPadding==-1) layout.putConstraint(SpringLayout.WEST, c1, 0, SpringLayout.WEST, c2);
+        if(eastPadding==-1) layout.putConstraint(SpringLayout.EAST, c1, 0, SpringLayout.EAST, c2);
+        if(northPadding==-1) layout.putConstraint(SpringLayout.NORTH, c1, 0, SpringLayout.NORTH, c2);
+        if(southPadding==-1) layout.putConstraint(SpringLayout.SOUTH, c1, 0, SpringLayout.SOUTH, c2);
     }
 }

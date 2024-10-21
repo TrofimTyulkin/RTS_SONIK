@@ -40,7 +40,7 @@ public class Indicator extends JPanel implements ActionListener {
         AffineTransform old = g2d.getTransform();
         g2d.translate(centerX, centerY);
         g2d.setColor(color);
-        g2d.fillOval(5,-5, 10,10);
+        g2d.fillOval(-5,-5, 10,10);
 
         // Восстанавливаем исходное состояние трансформаций
         g2d.setTransform(old);
@@ -53,12 +53,14 @@ public class Indicator extends JPanel implements ActionListener {
         this.color = color;
     }
 
-//    public static void main(String[] args) {
-//        JFrame frame = new JFrame("Windmill Animation");
-//        WindmillAnimation animation = new WindmillAnimation();
-//        frame.add(animation);
-//        frame.setSize(400, 400);
-//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        frame.setVisible(true);
-//    }
+    public static void main(String[] args) {
+        JFrame frame = new JFrame("Windmill Animation");
+        frame.add(new JLabel("TEST"));
+        frame.setSize(400, 400);
+        Indicator i = new Indicator();
+        i.setColor(Color.red);
+        frame.add(i);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
+    }
 }
