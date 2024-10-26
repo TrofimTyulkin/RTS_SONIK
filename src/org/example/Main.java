@@ -1,82 +1,67 @@
 package org.example;
 
-import com.formdev.flatlaf.FlatDarculaLaf;
-import com.formdev.flatlaf.FlatIntelliJLaf;
-import com.formdev.flatlaf.FlatLightLaf;
+import org.example.Generator.Data;
 import org.example.ui.MainFrame;
-import org.example.ui.MainPanel;
 import org.example.ui.test;
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.plot.CategoryPlot;
-import org.jfree.chart.plot.DatasetRenderingOrder;
-import org.jfree.data.category.DefaultCategoryDataset;
-
 
 import javax.swing.*;
-import java.awt.*;
+import javax.swing.plaf.nimbus.NimbusLookAndFeel;
+import java.sql.*;
 
 public class Main {
     public static void main(String[] args) {
-        //UIManager.setLookAndFeel("Nimbus");
         try {
             UIManager.setLookAndFeel( new test());
+            //UIManager.setLookAndFeel( new NimbusLookAndFeel());
         } catch (Exception e) {
             e.printStackTrace();
         }
-        MainFrame main = new MainFrame();
+        new MainFrame(new Data());
 
-        DefaultCategoryDataset voltageDataset = new DefaultCategoryDataset();
-        voltageDataset.addValue(5, "Датчик 1", "1 сек");
-        voltageDataset.addValue(7, "Датчик 1", "2 сек");
-        voltageDataset.addValue(6, "Датчик 1", "3 сек");
+        String url = "jdbc:sqlserver://nep;databaseName=dwh;encrypt=false;trustServerCertificate=true;";
 
-        voltageDataset.addValue(4, "Датчик 2", "1 сек");
-        voltageDataset.addValue(6, "Датчик 2", "2 сек");
-        voltageDataset.addValue(7, "Датчик 2", "3 сек");
 
-        // Создаем первый график (для напряжения)
-        JFreeChart chart = ChartFactory.createLineChart(
-                "Напряжение и Сила тока",   // Заголовок графика
-                "Время",                    // Ось X
-                "Напряжение (Вольты)",       // Ось Y1 (напряжение)
-                voltageDataset
-        );
+        try (Connection conn = DriverManager.getConnection(url);) {
+            System.out.print("connected");
 
-        CategoryPlot plot = chart.getCategoryPlot();
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
 
-        // Создаем второй набор данных для силы тока
-        DefaultCategoryDataset currentDataset = new DefaultCategoryDataset();
-        currentDataset.addValue(1, "Датчик 1", "1 сек");
-        currentDataset.addValue(1.2, "Датчик 1", "5 сек");
-        currentDataset.addValue(1.5, "Датчик 1", "3 сек");
+        try (Connection conn = DriverManager.getConnection(url); Statement statement = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);) {
+            System.out.print("connected");
 
-        currentDataset.addValue(0.8, "Датчик 2", "1 сек");
-        currentDataset.addValue(1.1, "Датчик 2", "2 сек");
-        currentDataset.addValue(1.3, "Датчик 2", "3 сек");
+            String SQL = "SELECT COLUMN_NAME, TABLE_NAME FROM INFORMATION_SCHEMA.COLUMNS";
+            ResultSet rs = statement.executeQuery(SQL);
+            System.out.println(rs.wasNull());
 
-        // Создаем вторую ось Y (для силы тока)
-        NumberAxis secondAxis = new NumberAxis("Сила тока (Амперы)");
-        plot.setRangeAxis(1, secondAxis);
+            while (rs.next()){
+                System.out.println(rs.getString(1) + "  " +  rs.getString(2));
+            }
 
-        // Добавляем второй набор данных на второй оси Y
-        plot.setDataset(1, currentDataset);
-        plot.mapDatasetToRangeAxis(1, 1);  // Указываем, что данные 1-й группы идут на вторую ось (ось 1)
+            SQL = "SELECT  [Period]" +
+                    "      ,[DateBegin]" +
+                    "      ,[DateEnd]" +
+                    "      ,[MaxF]" +
+                    "      ,[ID]" +
+                    "  FROM [Monf].[dbo].[PER_F_CK11]" +
+                    "  where DateBegin >= '20240612' and DateEnd<= '20240614'";
+            rs = statement.executeQuery(SQL);
+            System.out.println(rs.wasNull());
 
-        // Настраиваем отображение второго набора данных (сила тока)
-        plot.setRenderer(1, plot.getRenderer(0));  // Используем тот же рендерер для обеих осей
-        plot.setDatasetRenderingOrder(DatasetRenderingOrder.REVERSE);
-        //setSize(1350,600);
-        //ChartPanel panel = new ChartPanel(chart);
-        //panel.setPreferredSize(new Dimension(1150, 600));
-        //add(panel);
 
-//        main.getPanel().add(mainPanel, "main");
-        //main.getPanel().add(panel, "test");
+            int i = 0;
+            while (rs.next()){
+                System.out.println(rs + "" + i);
+                i++;
+            }
 
-//        main.getLayout().show(main.getPanel(), "main");
-//        main.revalidate();
 
+
+        }catch (SQLException e){
+            e.printStackTrace();
+            System.out.println("обшибка");
+        }
+        //Data data = new Data();
     }
 }

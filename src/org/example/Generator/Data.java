@@ -3,26 +3,29 @@ package org.example.Generator;
 import javax.swing.Timer;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.List;
 
 public class Data implements ActionListener {
-    List<Double> dataVoltagePanel = new ArrayList<>();//выходное напряжение панели
-    List<Double> dataAmperagePanel = new ArrayList<>();//выходная сила тока панели
-    List<Double> dataVoltageController = new ArrayList<>();//выходное напряжение контроллера
-    List<Double> dataAmperageController = new ArrayList<>();//выходная сила тока контроллера
-    List<Double> dataCapacityBattery = new ArrayList<>();//текущая емкость батареи
-    List<Double> dataProduce = new ArrayList<>();//текущее потребление энергии
-    List<LocalDate> dataDate = new ArrayList<>();//дата
-    List<Boolean> dataIsCharge = new ArrayList<>();//заряжается ли батарея
-    List<Boolean> dataIsLowCapacity = new ArrayList<>();//низкий заряд
-    List<Boolean> dataIsOverCharge = new ArrayList<>();//перезаряд(заряд больше 48)
+    ArrayList<Double> dataVoltagePanel = new ArrayList<>();//выходное напряжение панели
+    ArrayList<Double> dataAmperagePanel = new ArrayList<>();//выходная сила тока панели
+    ArrayList<Double> dataVoltageController = new ArrayList<>();//выходное напряжение контроллера
+    ArrayList<Double> dataAmperageController = new ArrayList<>();//выходная сила тока контроллера
+    ArrayList<Double> dataCapacityBattery = new ArrayList<>();//текущая емкость батареи
+    ArrayList<Double> dataProduce = new ArrayList<>();//текущее потребление энергии
+    ArrayList<LocalTime> dataDate = new ArrayList<>();//дата
+    ArrayList<Boolean> dataIsCharge = new ArrayList<>();//заряжается ли батарея
+    ArrayList<Boolean> dataIsLowCapacity = new ArrayList<>();//низкий заряд
+    ArrayList<Boolean> dataIsOverCharge = new ArrayList<>();//перезаряд(заряд больше 48)
+    ArrayList<Double> dataPower = new ArrayList<>();//общая мощность панели
+    ArrayList<Double> dataMoney = new ArrayList<>();//полученные деньги
+    ArrayList<Double> dataErrorMoneyBattery = new ArrayList<>();//полученные деньги
+    ArrayList<Double> dataErrorMoneyPanel = new ArrayList<>();//полученные деньги
+    ArrayList<Double> dataTotalMoney = new ArrayList<>();//полученные деньги
     boolean isErrorRecharge = false;//ошибка перезарядки (зарядка не отключается при достижении 48 ватт)
     double curCapacity;//текущая емкость батареи
     boolean isErrorVoltage = false;//ошибка выходного напряжения контроллера
-
+    Timer timer;
     double maxCapacity = 48.0;//максимальная емкость
     int minProduce = 10;//минимальное потребление
     int maxProduce = 20;//максимальное потребление
@@ -30,7 +33,8 @@ public class Data implements ActionListener {
 
     public Data() {
         dataCapacityBattery.add(30.0);//задаем начальную емкость
-        Timer timer = new Timer(500, this);//раз в полсекунды обновляем показания датчиков
+        dataTotalMoney.add(0.0);//задаем начальную емкость
+        timer = new Timer(500, this);//раз в полсекунды обновляем показания датчиков
         timer.start();
         Timer timer1 = new Timer(7000, e -> {
             if (Generator.generate(0,1,3) > 0.7){
@@ -54,26 +58,38 @@ public class Data implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {//вот тут обновляем показания датчиков
-        double curVolt = Generator.generate(5,15,3);
-        double curAmperage = Generator.generate(2,7,3);
-        double curProduce = Generator.generate(minProduce,maxProduce,3);
+        dataDate.add(LocalTime.now());
+        double curVolt = Generator.generate(5, 15, 3);
+        double curAmperage = Generator.generate(2, 7, 3);
+        double curProduce = Generator.generate(minProduce, maxProduce, 3);
         double curVoltageController = 12;
-        double curAmperageController = Generator.round(curVolt*curAmperage/curVoltageController);
-        double prevCapacity =  getLastDataCapacityBattery();
+        double curAmperageController = Generator.round(curVolt * curAmperage / curVoltageController);
+        double prevCapacity = getLastDataCapacityBattery();
+        double prevTotalMoney = getLastDataTotalMoney();
+        double curMoney = 0.0;
 
-        curCapacity = Generator.round(prevCapacity + curAmperage*curVolt/60 - curProduce/60);
 
-        if (isErrorRecharge) maxCapacity = 55;
-        else maxCapacity = 48;
-        if (isErrorVoltage) curVoltageController = Generator.generate(10,15, 3);
+        curCapacity = Generator.round(prevCapacity + curAmperage * curVolt / 60 - curProduce / 60);
 
+        if (isErrorRecharge) {
+            maxCapacity = 55;
+            curMoney -= 5;
+            dataErrorMoneyBattery.add(-5.0);
+        } else{
+            maxCapacity = 48;
+            dataErrorMoneyBattery.add(0.0);
+        }
+        if (isErrorVoltage){
+            curVoltageController = Generator.generate(10, 15, 3);
+            curMoney -= 5;
+            dataErrorMoneyPanel.add(-5.0);
+        }else  dataErrorMoneyPanel.add(0.0);
         if(curCapacity < maxCapacity){
             if (curCapacity < 10){
                 dataIsLowCapacity.add(true);
                 curProduce = 0;
                 curCapacity = Generator.round(prevCapacity + curAmperage*curVolt/60 - curProduce/60);
                 System.err.println("LOW CAPACITY" + curProduce);
-                //if (curProduce==0)System.err.println(prevCapacity+" "+curCapacity);
             }else{
                 dataIsLowCapacity.add(false);
             }
@@ -94,17 +110,30 @@ public class Data implements ActionListener {
             curCapacity = Generator.round(prevCapacity - curProduce/60);
         }
 
+        double bid = 2;
+
+        //if (curProduce > 60) bid = 3;
+        if (curProduce <= 60 && curProduce > 0) bid = 2;
+        else if (curProduce <= 0) bid = 4;
+
+        curMoney += Generator.round(curProduce*bid/60);
+
         dataCapacityBattery.add(curCapacity);
 
+        dataTotalMoney.add(Generator.round(prevTotalMoney + curMoney));
+        dataMoney.add(curMoney);
 
-
+        dataPower.add(Generator.round(curAmperageController*curVoltageController));
         dataVoltagePanel.add(curVolt);
         dataAmperagePanel.add(curAmperage);
         dataAmperageController.add(curAmperageController);
         dataVoltageController.add(curVoltageController);
-        dataDate.add(LocalDateTime.now().toLocalDate());
         dataProduce.add(curProduce);
+        System.err.println(bid);
         System.out.printf("CapacityBattery = %s ", getLastDataCapacityBattery());
+        System.out.printf("prevTotalMoney = %s ", prevTotalMoney);
+        System.out.printf("curMoney = %s ", curMoney);
+        System.out.printf("dataTotalMoney = %s ", Generator.round(prevTotalMoney + curMoney));
         System.out.printf("curProduce = %s ", curProduce);
         System.out.printf("curVolt = %s ", curVolt);
         System.out.printf(" curAmperage = %s ",curAmperage);
@@ -115,21 +144,35 @@ public class Data implements ActionListener {
     public Double getLastDataCapacityBattery(){
         return dataCapacityBattery.get(dataCapacityBattery.size()-1);
     }
-    public List<Double> getDataVoltagePanel() {
+    public Double getLastDataMoneyErrorPanel(){
+        return dataErrorMoneyPanel.get(dataErrorMoneyPanel.size()-1);
+    }
+    public Double getLastDataMoneyErrorBattery(){
+        return dataErrorMoneyBattery.get(dataErrorMoneyBattery.size()-1);
+    }
+    public Double getLastDataTotalMoney(){
+        return dataTotalMoney.get(dataTotalMoney.size()-1);
+    }
+    public ArrayList<Double> getDataVoltagePanel() {
         return dataVoltagePanel;
     }
-    public List<Double> getDataAmperagePanel() {
+    public ArrayList<Double> getDataAmperagePanel() {
         return dataAmperagePanel;
     }
 
-    public List<LocalDate> getDataDate() {
+    public ArrayList<LocalTime> getDataDate() {
         return dataDate;
     }
+    public Double getLastDataVoltController() {
+        return dataVoltageController.get(dataVoltageController.size()-1);
+    }
 
-    public Double getLastDataVoltController() {return dataVoltageController.get(dataVoltageController.size()-1); }
-
-    public Double getLastAmperageController() { return dataAmperageController.get(dataAmperageController.size()-1);}
-    public Double getLastDataVoltagePanel() {return dataVoltagePanel.get(dataVoltagePanel.size()-1); }
+    public Double getLastAmperageController() {
+        return dataAmperageController.get(dataAmperageController.size()-1);
+    }
+    public Double getLastDataVoltagePanel() {
+        return dataVoltagePanel.get(dataVoltagePanel.size()-1);
+    }
     public Double getLastDataAmperagePanel(){
         return dataAmperagePanel.get(dataAmperagePanel.size()-1);
     }
@@ -146,23 +189,41 @@ public class Data implements ActionListener {
     public Boolean getLastDataIsOverCharge(){
         return dataIsOverCharge.get(dataIsOverCharge.size()-1);
     }
-    public List<Double> getDataVoltageController() {
+    public ArrayList<Double> getDataVoltageController() {
         return dataVoltageController;
     }
 
-    public List<Double> getDataAmperageController() {
+    public ArrayList<Double> getDataAmperageController() {
         return dataAmperageController;
     }
 
-    public List<Double> getDataCapacityBattery() {
+    public ArrayList<Double> getDataCapacityBattery() {
         return dataCapacityBattery;
     }
-    public List<Double> getDataCapacityBatteryForChart() {
-        List<Double> res = new ArrayList<>();
+    public ArrayList<Double> getDataCapacityBatteryForChart() {
+        ArrayList<Double> res = new ArrayList<>();
         int maxSize = dataCapacityBattery.size();
-        if (maxSize >=8)  maxSize = 8;
+        if (maxSize >=24)  maxSize = 24;
         for (int i = dataCapacityBattery.size() - 1; i >= dataCapacityBattery.size() - maxSize; i--) {
             res.add(dataCapacityBattery.get(i));
+        }
+        return res;
+    }
+    public ArrayList<Double> getDataPowerForChart() {
+        ArrayList<Double> res = new ArrayList<>();
+        int maxSize = dataPower.size();
+        if (maxSize >=24)  maxSize = 24;
+        for (int i = dataPower.size() - 1; i >= dataPower.size() - maxSize; i--) {
+            res.add(dataPower.get(i));
+        }
+        return res;
+    }
+    public ArrayList<Double> getDataProduceForChart() {
+        ArrayList<Double> res = new ArrayList<>();
+        int maxSize = dataProduce.size();
+        if (maxSize >=24)  maxSize = 24;
+        for (int i = dataProduce.size() - 1; i >= dataProduce.size() - maxSize; i--) {
+            res.add(dataProduce.get(i));
         }
         return res;
     }
@@ -193,5 +254,8 @@ public class Data implements ActionListener {
 
     public void setErrorVoltage(boolean errorVoltage) {
         isErrorVoltage = errorVoltage;
+    }
+    public Timer getTimer(){
+        return timer;
     }
 }
